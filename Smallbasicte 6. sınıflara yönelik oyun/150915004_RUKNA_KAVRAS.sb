@@ -1,0 +1,100 @@
+GraphicsWindow.Width=400 'grafik penceresinin genişliği
+GraphicsWindow.Height=500 'grafik penceresinin yüksekliği
+GraphicsWindow.BackgroundColor="darkgreen" 'grafik penceresinin arkaplan rengi koyu yeşil
+GraphicsWindow.Title="Basketbol Oyunu" 'grafik penceresinin başlığı
+GraphicsWindow.CanResize = "False" 'Grafik penceresinin boyutları kullanıcı tarafından yeniden boyutlandırılıp değiştirilemez.
+
+'Basketbol Sahasını Çizen Kodlar
+GraphicsWindow.PenColor="white" 'çizilen şekillerin kalem rengi beyaz
+GraphicsWindow.DrawEllipse(150,190,100,100)'ortadaki beyaz daire
+GraphicsWindow.DrawLine(0,240,450,240)'ortadaki beyaz çizgi
+GraphicsWindow.DrawEllipse(-50,360,500,500)'alttaki yarım daire
+
+GraphicsWindow.PenColor="red" 'çizilen şeklin kalem rengi kırmızı
+GraphicsWindow.DrawRectangle(170,399,70,110)'alttaki kırmızı dikdörtgen
+
+GraphicsWindow.PenColor="red" 'çizilen şeklin kalem rengi kırmızı
+GraphicsWindow.DrawRectangle(170,1,70,105)'üstteki kırmızı dikdörtgen
+
+GraphicsWindow.PenColor="white" 'çizilen şeklin kalem rengi beyaz
+GraphicsWindow.DrawEllipse(170,361,70,70)'alttaki tam daire
+
+GraphicsWindow.PenColor="white" 'çizilen şeklin kalem rengi beyaz
+GraphicsWindow.DrawEllipse(170,70,70,70)'üstteki tam daire
+
+GraphicsWindow.PenColor="white"'üstteki yarım daire
+GraphicsWindow.DrawEllipse(-50,-360,500,500)
+
+GraphicsWindow.PenColor="red" 'çizilen şeklin kalem rengi kırmızı
+GraphicsWindow.DrawLine(205,480,205,540)'alttaki kırmızı dik çizgi
+
+GraphicsWindow.PenColor="red" 'çizilen şeklin kalem rengi kırmızı
+GraphicsWindow.DrawEllipse(192,455,25,25)'alttaki kırmızı daire
+
+basildi=0 'basıldı değişkeni, içinde 1 veya 0 saklayacağız. 1 olursa boşluk tuşuna basılmış, 0 ise boşluk tuşuna basılmamıştır.
+smacsayisi=0 'smaç sayısının başlangıç değerine 0 verildi.
+
+'top isimli değişkenimiz içinde topumuzu temsilen 20'ye 20'yi bir daire var. 0,0 noktasına topu yerleştiriyoruz.
+GraphicsWindow.PenColor="orange" 'çizilen topun kalem rengi turuncu
+GraphicsWindow.BrushColor="orange"'çizilen topun dolgu rengi turuncu
+top=Shapes.AddEllipse(20,20) 'top şeklinin çizlmesi için 20-20 boyutlarında daire eklendi
+Shapes.Move(top,0,0) 'eklenen top 0-0 konumuna taşındı
+
+GraphicsWindow.KeyDown=vur 'klavyeden tuşa basılma işlemi vur değikenine aktarıldı.
+'oyunu başlatıyoruz
+basla() 'basla alt yordamı çağrılıyor.
+
+Sub basla 'basla alt yordamı tanımlanıyor.
+  'Top nesnesini soldan sağa doğru götüren döngü. Eğer boşluk tuşuna basılırsa "topufırlat" isimli altprograma geçilir.
+  For konum= 0 To 380
+    If basildi=0 Then     
+      Shapes.Move(top,konum,0)
+      Program.Delay(3) 'topun belirtilen süre içinde hareketini sağlar.      
+    Else
+      topufirlat() 'topufirlat alt yordamı çağrılıyor.
+    EndIf   
+    
+  'Top nesnesini sağdan sola doğru götüren döngü. Eğer boşluk tuşuna basılırsa "topufırlat" isimli altprograma geçilecek.
+  For konum= 380 To 0 Step -1
+    If basildi=0 Then
+      Shapes.Move(top,konum,0)
+      Program.Delay(3) 'topun belirtilen süre içinde hareketini sağlar.
+    Else
+      topufirlat()  'topufirlat alt yordamı çağrılıyor.
+    EndIf     
+  EndFor
+  EndFor
+EndSub
+
+'Klavyeye basılırsa devreye girecek alt program. Sadece boşluk tuşuna basılırsa "basildi" isimli bilinmeyen 1 olur.
+Sub vur 'vur alt yordamı tanımlanıyor.
+  tus= GraphicsWindow.LastKey 'tus değişkeni içine son basılan tuş değeri atanıyor.
+  If tus="Space" Then 'boşluk tuşuna basılıp basılmadığı kontolü yapılıyor. Basılırsa basildi değeri 1 olur.
+    basildi=1
+  EndIf    
+EndSub
+
+' Topu ileri doğru fırlatan alt program
+Sub topufirlat
+  For i= 0 To 460
+    Shapes.Move(top,konum,i)
+    Program.Delay(3) 'topun belirtilen süre içinde hareketini sağlar.
+  EndFor
+  
+  'Top aşağı ulaştığında topun potadan içeri girip, girmediğini kontrol eden koşul. 
+  if konum>185 And konum <205 Then
+    smacsayisi=smacsayisi + 1 'top potadan her girdiğinde bu skorları toplayarak sayısını smacsayısı değişkenine atar.
+    Sound.PlayClick() 'top potaya her girdiğinde click sesi çalınır.
+    basildi=0
+    basla() 'basla alt yordamı çağrılıyor.
+  Else
+    bitir() 'bitir alt yordamı çağrılıyor.
+  EndIf
+EndSub
+
+'top pota dışında bir yere fırlatıldığında oyun playchime (çan) sesi ile biter ve skor mesaj olarak ekranda verilir.
+Sub bitir 'bitir alt yordamı tanımlanıyor.
+  Sound.PlayChime() 'oyun bitiiğinde çan sesi çalınır.
+  GraphicsWindow.ShowMessage(smacsayisi, "Smaç Sayısı") 'skor oyun bittiğinde mesaj olarak verilir.
+  Program.End() 'program sonlandırılır.
+EndSub
